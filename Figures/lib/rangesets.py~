@@ -1,0 +1,38 @@
+# ranges sets 
+#range1
+ghmin1, ghmax1, gsdmin1, gsdmax1= 0.35, 0.4, 0.197, 0.207 #range chaos 1 gh/gsd T36
+ghmin2, ghmax2, gsdmin2, gsdmax2= 0.1, 0.15, 0.197, 0.207 #range nonchaos 1 gh/gsd T36
+#range2
+ghmin11, ghmax11, gsdmin11, gsdmax11= 0.2, 0.25, 0.255, 0.265 #range chaos 2 gh/gsd T36
+ghmin22, ghmax22, gsdmin22, gsdmax22= 0.2, 0.25, 0.23, 0.24 #range nonchaos 2 gh/gsd T36
+#range3
+ghmin10, ghmax10, gsdmin10, gsdmax10= 0.25, 0.30, 0.26, 0.27 #range chaos 3 gh/gsd T36
+ghmin20, ghmax20, gsdmin20, gsdmax20= 0.35, 0.4, 0.26, 0.27 #range nonchaos 3 gh/gsd T36
+#range4
+ghmin111, ghmax111, gsdmin111, gsdmax111= 0.35, 0.40, 0.275, 0.285 #range chaos 4 gh/gsd T36
+ghmin222, ghmax222, gsdmin222, gsdmax222= 0.18, 0.23, 0.275,0.285 #range nonchaos 4 gh/gsd T36
+#range5
+ghmin5, ghmax5, gsdmin5, gsdmax5= 0.35, 0.40, 0.275, 0.285 #range chaos 5 gh/gsd T36
+ghmin55, ghmax55, gsdmin55, gsdmax55= 0.10, 0.15, 0.25,0.26 #range nonchaos 5 gh/gsd T36
+#range6
+ghmin6, ghmax6, gsdmin6, gsdmax6= 0.35, 0.40, 0.275, 0.285 #range chaos 6 gh/gsd T36
+ghmin66, ghmax66, gsdmin66, gsdmax66= 0.35, 0.40, 0.30,0.31 #range nonchaos 6 gh/gsd T36
+##range7
+#ghmin7, ghmax7, gsdmin7, gsdmax7= 0.35, 0.40, 0.275, 0.285 #range chaos 4 gh/gsd T36
+#ghmin77, ghmax77, gsdmin77, gsdmax77= 0.20, 0.25, 0.275,0.285 #range nonchaos 4 gh/gsd T36
+##range8
+ghmin7, ghmax7, gsdmin7, gsdmax7= 0.35, 0.40, 0.275, 0.285 #range chaos 4 gh/gsd T36
+ghmin77, ghmax77, gsdmin77, gsdmax77= 0.19, 0.24, 0.275,0.285 #range nonchaos 4 gh/gsd T36
+
+fsize=15          # fontsize
+lyap_min=0         #minmum lyapunov value
+lyap_max=1.6         #maxsimum lyapunov value
+Xdata=0
+Ydata=4
+Ydata2=3
+tEnd=50000
+nsim=50
+tbin=40
+rseed0=[15,0]
+ranges0=[1,2]
+N=2    # number of ranges
