@@ -232,8 +232,7 @@ def Fig1_regluar(times, vt_chaos, vt_nonchaos):
     time1= np.arange(0,100,0.01)
     y1=time1**2
     y2=(time1+5)**2
-    
-    
+       
     gsd0=0.280;gh0=0.181;MLE0=-5.65*10**(-5)
     gsd1=0.203 ;gh1=0.335;MLE1=0.005
 
@@ -241,12 +240,6 @@ def Fig1_regluar(times, vt_chaos, vt_nonchaos):
     plt.figure(1, figsize=(12,6))
     plt.clf
     gs = gridspec.GridSpec(100, 100, wspace=0, hspace=0.1)
-#    ax1=plt.subplot(gs[:19,bb:98])
-#    ax2=plt.subplot(gs[23:42,bb:98])
-#    ax3=plt.subplot(gs[57:76,bb:98])
-#    ax4=plt.subplot(gs[80:99,bb:98])
-#    ax5=plt.subplot(gs[58:98,0:20])
-#    ax6=plt.subplot(gs[0:45,0:20])
 
     ax1=plt.subplot(gs[:21,0:71])
     ax2=plt.subplot(gs[22:42,0:71])
@@ -307,8 +300,6 @@ def Fig1_regluar(times, vt_chaos, vt_nonchaos):
 #    ax5.set_title('Chaotic')
     ax6.plot(vt_nonchaos[20000:,2],vt_nonchaos[20000:,3],vt_nonchaos[20000:,4])
     ax6.dist = 8.5
-
-#    ax6.set_title('Regular')
 
     for ax0 in [ax5,ax6]:
         ax0.set_xlabel(r'$\mathsf{a_{sd}}}$',fontsize='x-large',labelpad=-3)
@@ -490,12 +481,7 @@ def  Fig2_FS(mle, FR, FR_mask,tupTable2):
     
         for t in ax[i].xaxis.get_minor_ticks()[:9]:
             t.set_visible(False)
-        ax[i].tick_params(labelsize=10)
-
-
-
-    
-    
+        ax[i].tick_params(labelsize=10)   
     
     #subplots for the the mle
     Ran=['Region 1','Region 2']
@@ -809,9 +795,7 @@ def Fig5_plot(chaos, nonchaos, noIh):
             t.set_visible(False)
         ax[i].tick_params(labelsize=10)
 #        ax[i].tick_params(labelsize=10)
-    
-    
-    
+     
     #subplots for the the mle
     Fre=[[3.0,4.5],[7.0,9.5]]
     for i,j,fr in zip(range(2,6,3),range(0,2),Fre):
