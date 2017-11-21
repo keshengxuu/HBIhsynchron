@@ -11,6 +11,7 @@ import matplotlib.gridspec as gridspec
 import matplotlib.markers as Mar
 import matplotlib.cm as cm
 import matplotlib as mpl
+from matplotlib.gridspec import GridSpec
 from mpl_toolkits.mplot3d import Axes3D
 #The module of generating a colormap index base on discrete intervals
 import matplotlib.colors as colors
@@ -21,7 +22,7 @@ plt.rcParams['font.sans-serif'] = 'Arial'
 #changing the xticks and  yticks fontsize for all sunplots
 plt.rc('xtick', labelsize=11) 
 plt.rc('ytick', labelsize=11) 
-plt.rc('font',size=10)
+plt.rc('font',size=11)
 
 ##################################################
 # The classes and functions used for the figures
@@ -258,7 +259,7 @@ def Fig1_regluar(times, vt_chaos, vt_nonchaos):
     ax1.plot(times,vt_nonchaos[:,0])
     ax1.set_title(r'Non-chaotic oscillation ($\mathsf{g_{sd}=%0.3f,g_{h}=%0.3f,MLE=%0.2e}$)'%(gsd0,gh0,MLE0),fontsize='x-large')
     ax1.set_yticks(np.linspace(-90,30,3))
-    ax1.set_ylabel(u'V (mv)',fontsize='x-large')
+    ax1.set_ylabel(u'V (mV)',fontsize='x-large')
     ax1.text(-800,32,'A',fontsize='xx-large')
     ax1.set_xlim([0,10000])
     ax1.set_xticks([])
@@ -284,7 +285,7 @@ def Fig1_regluar(times, vt_chaos, vt_nonchaos):
     ax3.set_title(r'Chaotic oscillation ($\mathsf{g_{sd}=%0.3f,g_{h}=%0.3f,MLE=%0.3f}$)'%(gsd1,gh1,MLE1),fontsize='x-large')
     ax3.set_xlim([0,10000])
     ax3.set_yticks(np.linspace(-90,30,3))
-    ax3.set_ylabel(u'V (mv)',fontsize='x-large')
+    ax3.set_ylabel(u'V (mV)',fontsize='x-large')
     ax3.text(-800,32,'B',fontsize='xx-large')
     ax3.set_xticks([])
     plt.margins(0,0)
@@ -391,13 +392,13 @@ def  Fig2_FS(mle, FR, FR_mask,tupTable2):
     #the colorbar for MLE
     cax1=fig.add_axes([0.32, 0.68, 0.01, 0.26])
     cbar1=fig.colorbar(im, extend='both',cax=cax1)
-    cbar1.set_label(r'MLE ',fontsize='medium',labelpad=-18, y=1.1, rotation=0)
+    cbar1.set_label(r'MLE ',fontsize='large',labelpad=-20, y=1.1, rotation=0)
     cbar1.set_ticks(np.linspace(0,0.006,4))
     cbar1.ax.tick_params(labelsize='x-small')
 
     #subplots of firing rate
     im2=ax2.imshow(FR[0],origin='lower',extent=FR[1],
-               aspect='auto',vmin=0,vmax=20,interpolation='none')
+               aspect='auto',vmin=0,vmax=20,interpolation='none',cmap=cmap)
     ax2.autoscale(False) # to reset the axes scale.
     ax2.plot((gsdmin1,gsdmin1,gsdmax1,gsdmax1,gsdmin1),(ghmin1,ghmax1,ghmax1,ghmin1,ghmin1),'r-',lw=2)
     ax2.plot((gsdmin2,gsdmin2,gsdmax2,gsdmax2,gsdmin2),(ghmin2,ghmax2,ghmax2,ghmin2,ghmin2),'g-',lw=2)
@@ -406,7 +407,7 @@ def  Fig2_FS(mle, FR, FR_mask,tupTable2):
     # the setting of firing rate colorbar
     cax2=fig.add_axes([0.64, 0.68, 0.01, 0.26])
     cbar2=fig.colorbar(im2, extend='max',cax=cax2)
-    cbar2.set_label('FR ',fontsize='small',labelpad=-18, y=1.08, rotation=0)
+    cbar2.set_label('FR ',fontsize='large',labelpad=-18, y=1.1, rotation=0)
     cbar2.set_ticks(np.linspace(0,20,5))
     cbar2.ax.tick_params(labelsize='small')
     
@@ -425,61 +426,121 @@ def  Fig2_FS(mle, FR, FR_mask,tupTable2):
     cax3 = fig.add_axes([0.965, 0.68, 0.012, 0.26])
     cbar3 = fig.colorbar(im3b, ticks=[ 0.4, 1.3, 2.1, 3, 3.8, 4.7, 5.5],cax=cax3)
     cbar3.ax.set_yticklabels(['0', '1', '2', '3', '4', '5', '6'])
-    cbar3.set_label(r'FP',labelpad=-16, y=1.08, rotation=0)
+    cbar3.set_label(r'FP',fontsize='large',labelpad=-18, y=1.1, rotation=0)
     cbar3.ax.tick_params(labelsize='medium')
     
     # the plots for synchronization transition,inlcude metastablilty and MLE 
     #subplots of the order parameters for the range1 and range2 repectively.
     for i,j in zip(range(0,4,3),range(0,2)):
-        ax[i].plot(nonchaos[j][:,0],np.mean(nonchaos[j][:,1:11],axis=1),'g-s', markersize=4.5)
-        ax[i].plot(chaos[j][:,0],np.mean(chaos[j][:,1:11],axis=1),'r--*',  markersize=5)
-        ax[i].set_ylabel(r'R', fontsize = 'x-large')
+        ax[i].plot(nonchaos[j][:,0][1],np.mean(nonchaos[j][:,1:11],axis=1)[1],'g-s', markersize=4.5)
+        ax[i].plot(nonchaos[j][:,0][5:],np.mean(nonchaos[j][:,1:11],axis=1)[5:],'g-s', markersize=4.5,
+          label='Non-chaotic networks ')
+        
+        ax[i].plot(chaos[j][:,0][1],np.mean(chaos[j][:,1:11],axis=1)[1],'r--*',  markersize=5)
+        ax[i].plot(chaos[j][:,0][5:],np.mean(chaos[j][:,1:11],axis=1)[5:],'r--*',  markersize=5,
+          label='Chaotic networks')
+        ax[i].set_xscale('log')
+        ax[i].set_ylabel(r'R', fontsize = 'large')
         ax[i].set_yticks([0.2, 0.4, 0.6, 0.8, 1.0])
         ax[i].set_yticklabels(['0.2', '0.4', '0.6', '0.8', '1.0'])
-#    ax4.legend(loc = 2 ,fontsize = 7)
-    ax4.legend(('Non-chaotic networks ','Chaotic networks'),loc=2,frameon=False,fontsize=8)
+        y1,y2=ax[i].get_ylim()
+        ax[i].bar(3e-6,0.5,3e-6,-0.01,color='white',lw=5,clip_on=False,zorder=5)
+        ax[i].set_ylim((y1,y2))
+
+        ax[i].set_xlim((5e-7,1.5))
+        ax[i].set_xticks((1e-6,1e-5,1e-4,1e-3,1e-2,0.1,1))
+        ax[i].set_xticklabels(("$0$","$10^{-5}$","$10^{-4}$","$10^{-3}$","$10^{-2}$","$10^{-1}$","$10^0$"))
+        
+        t1=ax[i].xaxis.get_major_ticks()[0]
+        t1.set_pad(5.5)
+    
+        for t in ax[i].xaxis.get_minor_ticks()[:9]:
+            t.set_visible(False)
+        ax[i].tick_params(labelsize=10)
+        
+
+    ax4.legend(loc=2,frameon=False,fontsize=8)
         
     ax[0].text(10**(-8.5),1.1,'B',fontsize='xx-large')
 #    ax[3].text(10**(-10),1.1,'C',fontsize='xx-large')
-       
+
+
     #subplots of mestablilty
     for i,j in zip(range(1,5,3),range(0,2)):
-        ax[i].plot(nonchaos[j][:,0],np.mean(nonchaos[j][:,21:31],axis=1),'g-s', markersize=4.5)
-        ax[i].plot(chaos[j][:,0],np.mean(chaos[j][:,21:31],axis=1),'r--*',  markersize=5)
-        ax[i].set_ylabel(u'Metastability', fontsize='x-large')
-        ax[i].set_ylim([-0.001,0.041])
-        ax[i].set_yticks(np.linspace(0.000,0.04,5))
+        ax[i].plot(nonchaos[j][:,0][1],np.mean(nonchaos[j][:,21:31],axis=1)[1],'g-s', markersize=4.5)
+        ax[i].plot(nonchaos[j][:,0][5:],np.mean(nonchaos[j][:,21:31],axis=1)[5:],'g-s', markersize=4.5)
+
+        ax[i].plot(chaos[j][:,0][1],np.mean(chaos[j][:,21:31],axis=1)[1],'r--*',  markersize=5)
+        ax[i].plot(chaos[j][:,0][5:],np.mean(chaos[j][:,21:31],axis=1)[5:],'r--*',  markersize=5)
+
+        ax[i].set_ylabel(u'Metastability', fontsize='large',labelpad= -1)
+        ax[i].set_ylim([-0.001,0.045])
+        ax[i].set_yticks(np.linspace(0.000,0.045,4))
+        ax[i].set_xscale('log')
+        y1,y2=ax[i].get_ylim()
+        ax[i].bar(3e-6,0.1,3e-6,-0.1,color='white',lw=5,clip_on=False,zorder=5)
+        ax[i].set_ylim((y1,y2))
+
+        ax[i].set_xlim((5e-7,1.5))
+        ax[i].set_xticks((1e-6,1e-5,1e-4,1e-3,1e-2,0.1,1))
+        ax[i].set_xticklabels(("$0$","$10^{-5}$","$10^{-4}$","$10^{-3}$","$10^{-2}$","$10^{-1}$","$10^0$"))
+        
+        t1=ax[i].xaxis.get_major_ticks()[0]
+        t1.set_pad(5.5)
+    
+        for t in ax[i].xaxis.get_minor_ticks()[:9]:
+            t.set_visible(False)
+        ax[i].tick_params(labelsize=10)
+
+
+
+    
+    
     
     #subplots for the the mle
     Ran=['Region 1','Region 2']
     for i,j,Ra in zip(range(2,6,3),range(0,2),Ran):
-        ax[i].plot(nonchaos[j][:,0],np.mean(nonchaos[j][:,11:21],axis=1),'g-s', markersize=4.5, color='g')
-        ax[i].plot(chaos[j][:,0],np.mean(chaos[j][:,11:21],axis=1),'r--*',  markersize=5)
-        ax[i].set_ylabel(u'MLE', fontsize='x-large')
+        ax[i].plot(nonchaos[j][:,0][1],np.mean(nonchaos[j][:,11:21],axis=1)[1],'g-s', markersize=4.5, color='g')
+        ax[i].plot(nonchaos[j][:,0][5:],np.mean(nonchaos[j][:,11:21],axis=1)[5:],'g-s', markersize=4.5, color='g')
+        
+        ax[i].plot(chaos[j][:,0][1],np.mean(chaos[j][:,11:21],axis=1)[1],'r--*',  markersize=5)
+        ax[i].plot(chaos[j][:,0][5:],np.mean(chaos[j][:,11:21],axis=1)[5:],'r--*',  markersize=5)
+        ax[i].set_ylabel(u'MLE', fontsize='large')
         ax[i].set_ylim([-0.0005,0.0122])
-        ax[i].set_yticks(np.linspace(0.000,0.012,5))
-        ax[i].text(10**(0.2),0.007,' %s'% Ra,rotation=90,fontsize='large') 
+        ax[i].set_yticks(np.linspace(0.000,0.012,4))
+        ax[i].text(10**(0.35),0.007,' %s'% Ra,rotation=90,fontsize='large')
+        ax[i].set_xscale('log')
+        y1,y2=ax[i].get_ylim()
+        ax[i].bar(3e-6,0.1,3e-6,-0.1,color='white',lw=5,clip_on=False,zorder=5)
+        ax[i].set_ylim((y1,y2))
+
+        ax[i].set_xlim((5e-7,1.5))
+        ax[i].set_xticks((1e-6,1e-5,1e-4,1e-3,1e-2,0.1,1))
+        ax[i].set_xticklabels(("$0$","$10^{-5}$","$10^{-4}$","$10^{-3}$","$10^{-2}$","$10^{-1}$","$10^0$"))
+        
+        t1=ax[i].xaxis.get_major_ticks()[0]
+        t1.set_pad(5.5)
+    
+        for t in ax[i].xaxis.get_minor_ticks()[:9]:
+            t.set_visible(False)
+        ax[i].tick_params(labelsize=10)
+
+
         
     
     # the setting for text and xticks and y ticks FOR subplots 1-3
-    ax1.set_ylabel(r'$\mathsf{g_{h}\; (mS/cm^2)}}$', fontsize = 'x-large')
+    ax1.set_ylabel(r'$\mathsf{g_{h}\; (mS/cm^2)}}$', fontsize = 'large')
     for ax0 in ax_iso:
             ax0.text(0.208,0.36,r'1',color='r',fontsize='large',fontweight='bold')
             ax0.text(0.208,0.11,r'1',color='g',fontsize='large',fontweight='bold')
             ax0.text(0.29,0.36,r'2',color='r',fontsize='large',fontweight='bold')
             ax0.text(0.29,0.19,r'2',color='g',fontsize='large',fontweight='bold')
-            ax0.set_xlabel(r'$\mathsf{g_{sd} \; (mS/cm^2)}}$', fontsize = 'x-large')
+            ax0.set_xlabel(r'$\mathsf{g_{sd} \; (mS/cm^2)}}$', fontsize = 'large')
             ax0.set_xticks(np.linspace(0.17,0.33,5))
             ax0.set_yticks(np.linspace(0,0.6,4))
-    #set the xlabel and ylabel  for subplots 4-9 
-    for ax0 in ax:
-        ax0.set_xscale('log')
-        ax0.set_xlim([10**(-6.3),10**0])
-        ax0.set_xticks(np.logspace(-6, 0, num=4))
-        ax0.grid()
-        
+
     for i in range(3,6):
-        ax[i].set_xlabel(r'g', fontsize = 'x-large')
+        ax[i].set_xlabel(r'g', fontsize = 'large')
 
 
     plt.subplots_adjust(left = 0.1,bottom=0.1, right=0.98, top=0.97, wspace=0.35, hspace=0.25)
@@ -501,43 +562,62 @@ def Fig3Histgram_FS(tupTable, Burst_chaos, Burst_nonch):
     """
     chaosTableFR, nonchaosTableFR, chaosTableFR2, nonchaosTableFR2  = tupTable
     #Firing rate histogram of range 1 and range2
-    fig = plt.figure(3,figsize=(7.8,6))
-    ax1= plt.subplot(211)
-    plt.plot(Ggjvals,Burst_nonch[0],'g-s',markersize=6)
-    plt.plot(Ggjvals,Burst_chaos[0],'r--*',  markersize=6)
-    plt.legend(('Non-chaotic networks ','Chaotic networks'),loc=2,frameon=False,fontsize='small')
+    fig = plt.figure(3,figsize=(11,3.5))
+    plt.clf()
+    gs = gridspec.GridSpec(1, 100, wspace=0, hspace=0.1)
+
+
+    ax1= plt.subplot(gs[0,0:30])
+    plt.plot(Ggjvals[1],Burst_nonch[0][1],'g-s',markersize=6)
+    plt.plot(Ggjvals[5:],Burst_nonch[0][5:],'g-s',markersize=6,label= 'Non-chaotic networks ')
+    
+    plt.plot(Ggjvals[1],Burst_chaos[0][1],'r--*',  markersize=6)
+    plt.plot(Ggjvals[5:],Burst_chaos[0][5:],'r--*',  markersize=6,label= 'Chaotic networks')
+    plt.legend(loc=2,frameon=False,fontsize='small')
     plt.yticks(np.linspace(0,1,5))
     plt.xscale('log')
 #    plt.ylabel('Mean fraction of  bursting events',fontsize = 'x-large')
-    plt.ylabel('MB',fontsize = 'x-large')
+    plt.ylabel('MB',fontsize = 'large')
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
-    plt.xlabel(r'g', fontsize = 'x-large',labelpad=-10)
-    ax1.set_xlim([10**(-6.3),10**(0.01)])
-    ax1.set_xticks(np.logspace(-6, 0, num=4))
-    plt.text(10**(-6.95), 0.96 ,'A',fontsize='x-large')
-    plt.grid()
+    plt.xlabel(r'g', fontsize = 'large',labelpad = -3)
+    y1,y2=ax1.get_ylim()
+    ax1.bar(3e-6,0.4,3e-6,-0.1,color='white',lw=0,clip_on=False,zorder=3)
+    ax1.set_ylim((y1,y2))
+
+    ax1.set_xlim((5e-7,1.99))
+    ax1.set_xticks((1e-6,1e-5,1e-4,1e-3,1e-2,0.1,1))
+    ax1.set_xticklabels(("$0$","$10^{-5}$","$10^{-4}$","$10^{-3}$","$10^{-2}$","$10^{-1}$","$10^0$",))
+
+    t1=ax1.xaxis.get_major_ticks()[0]
+    t1.set_pad(5.5)
+    
+    for t in ax1.xaxis.get_minor_ticks()[:8]:
+        t.set_visible(False)
+        
+    plt.text(10**(-7.8), 1 ,'A',fontsize='x-large')
+#    plt.grid()
     
     
     labels=['Non-chaotic neurons','Chaotic neurons']
-    ax2 = plt.subplot(223)
+    ax2 = plt.subplot(gs[0,40:68])
     ax2.hist((nonchaosTableFR[:,2],chaosTableFR[:,2]),bins=25,color=('g','r'),label=labels)
-    ax2.set_ylabel(u'Event count',fontsize='x-large')
+    ax2.set_ylabel(u'Event count',fontsize='large')
     ax2.legend(fontsize='small',loc=2,frameon=False)
 #    ax2.legend(loc='upper center',bbox_to_anchor=(1.08, 1.18),ncol=10,handleheight=1,handlelength=5,fontsize='small',frameon=False)
-    ax2.set_yticks(np.linspace(0,20,5))
-    plt.text(1.65, 20 ,'B',fontsize='x-large')
-    ax2.set_xlabel(u'Firing rate',fontsize='x-large')
+    ax2.set_yticks(np.linspace(0,36,4))
+    plt.text(1.65, 36 ,'B',fontsize='x-large')
+    ax2.set_xlabel(u'Firing rate (spikes/s)',fontsize='large')
 #    ax1.text(1.8,20,'B',fontsize='xx-large')
     ax2.set_title('Region 1',fontsize='small')
     
-    ax3=plt.subplot(224)
+    ax3=plt.subplot(gs[0,71:99])
     ax3.hist((chaosTableFR2[:,2],nonchaosTableFR2[:,2]),bins=25,color=('r','g'),label=labels)
-    ax3.set_xlabel(u'Firing rate',fontsize='x-large')
+    ax3.set_xlabel(u'Firing rate (spikes/s)',fontsize='large')
     ax3.set_yticks(np.linspace(0,36,4))
     ax3.set_title('Region 2',fontsize='small')
     
-    plt.subplots_adjust(left = 0.1,bottom=0.1, right=0.98, top=0.98, wspace=0.15, hspace=0.25)
+    plt.subplots_adjust(left = 0.08,bottom=0.2, right=0.98, top=0.945, wspace=0.20, hspace=0.25)
     plt.show
     plt.savefig(savepath+'Fig3_HistFS.eps')
     plt.savefig(savepath+'Fig3_HistFS.png')
@@ -547,7 +627,7 @@ def Fig3Histgram_FS(tupTable, Burst_chaos, Burst_nonch):
 def Fig4_Dis(lyap, lyap2, auxchao, auxnochaos, auxnoih, tupTable):
     chaosTable, nonchaosTable2, nonIhTable2 = tupTable
     cmap=plt.get_cmap('jet')
-    cmap.set_under('k',1)
+#    cmap.set_under('k',1)
     norm=colors.Normalize(vmin=0,vmax=0.006)
     
     fig=plt.figure(1,figsize=(8,7))
@@ -556,39 +636,39 @@ def Fig4_Dis(lyap, lyap2, auxchao, auxnochaos, auxnoih, tupTable):
     
     #subplot1
     #sizes = ['xx-small', 'x-small', 'small', 'medium', 'large','x-large', 'xx-large']
-    ax1=plt.subplot(gs[0:16,1:20])
+    ax1=plt.subplot(gs[0:15,1:20])
     im1=ax1.imshow(lyap[1],origin='lower',extent=lyap[3],aspect='auto',norm=norm,interpolation='none',cmap=cmap)
-    plt.xlabel(r'$\mathsf{ g_{sr} \; (mS/cm^2)}$',fontsize='large')
-    plt.ylabel(r'$\mathsf{ g_{sd} \; (mS/cm^2)}$',fontsize='large')
-    plt.text(0.23,0.415,r'MLE  (HB+$\mathsf{ \; I_{h}}$)',fontsize='small')
+    ax1.set_xlabel(r'$\mathsf{ g_{sr} \; (mS/cm^2)}$',fontsize='large')
+    ax1.set_ylabel(r'$\mathsf{ g_{sd} \; (mS/cm^2)}$',fontsize='large')
+    plt.text(0.23,0.415,r'MLE  (HB+$\mathsf{ \; I_{h}}$)',fontsize='medium')
     plt.text(0.15,0.4,r'A',fontsize='x-large')
     
     #subplot2
-    ax2=plt.subplot(gs[0:16,35:54])
-    im2=plt.imshow(auxchao[1],origin='lower',extent=auxchao[-1],aspect='auto',vmin=0,vmax=20,interpolation='none')
+    ax2=plt.subplot(gs[0:15,35:54])
+    im2=plt.imshow(auxchao[1],origin='lower',extent=auxchao[-1],aspect='auto',vmin=0,vmax=20,interpolation='none',cmap=cmap)
     plt.xlabel(r'$\mathsf{ g_{sr} \; (mS/cm^2)}$',fontsize='large')
     plt.ylabel(r'$\mathsf{ g_{sd} \; (mS/cm^2)}$',fontsize='large')
-    plt.text(0.23,0.415,r'Chaotic (desired FR)',fontsize='small')
+    plt.text(0.215,0.415,r'FR - chaotic (HB+$\mathsf{ \; I_{h}}$)',fontsize='medium')
     
     #subplot3
-    ax3=plt.subplot(gs[0:16,58:77])
-    im3=plt.imshow(auxnochaos[1],origin='lower',extent=auxnochaos[-1],aspect='auto',vmin=0,vmax=20,interpolation='none')
+    ax3=plt.subplot(gs[0:15,58:77])
+    im3=plt.imshow(auxnochaos[1],origin='lower',extent=auxnochaos[-1],aspect='auto',vmin=0,vmax=20 ,interpolation='none',cmap=cmap)
     plt.xlabel(r'$\mathsf{ g_{sr} \; (mS/cm^2)}$',fontsize='large')
-    plt.text(0.22,0.415,r'Non-chaotic (desired FR)',fontsize='small')
+    plt.text(0.20,0.415,r'FR - non-chaotic (HB+$\mathsf{ \; I_{h}}$)',fontsize='medium')
     
     #subplot4
-    ax4=plt.subplot(gs[24:40,1:20])
+    ax4=plt.subplot(gs[24:39,1:20])
     im4=plt.imshow(lyap2[1],origin='lower',extent=lyap2[3],aspect='auto',norm=norm,interpolation='none',cmap=cmap)
     plt.ylabel(r'$\mathsf{ g_{sd} \; (mS/cm^2)}$',fontsize='large')
-    plt.text(0.235,0.41,r'MLE (NoIh)',fontsize='small')
+    plt.text(0.235,0.41,r'MLE (HB)',fontsize='small')
     plt.text(0.15,0.4,r'B',fontsize='x-large')
     
     ##subplot5
-    ax5=plt.subplot(gs[44:60,1:20])
-    im5=plt.imshow(auxnoih[1],origin='lower',extent=auxnoih[-1],aspect='auto',vmin=0,vmax=20,interpolation='none')
+    ax5=plt.subplot(gs[45:60,1:20])
+    im5=plt.imshow(auxnoih[1],origin='lower',extent=auxnoih[-1],aspect='auto',vmin=0,vmax=20,interpolation='none',cmap=cmap)
     plt.xlabel(r'$\mathsf{ g_{sr} \; (mS/cm^2)}$',fontsize='large')
     plt.ylabel(r'$\mathsf{ g_{sd} \; (mS/cm^2)}$',fontsize='large')
-    plt.text(0.23,0.41,r'NoIh (desired FR)',fontsize='small')
+    plt.text(0.22,0.42,r'FR (without $\mathsf{ \; I_{h}}$)',fontsize='medium')
     
     #subplot6
     ax6=plt.subplot(gs[29:58,35:80])
@@ -597,9 +677,10 @@ def Fig4_Dis(lyap, lyap2, auxchao, auxnochaos, auxnoih, tupTable):
     plt.yticks(np.linspace(0,50,6))
     plt.ylabel(u'Event count ',fontsize='large')
     plt.legend(loc='upper center',bbox_to_anchor=(0.5, 1.1),ncol=3,fontsize='medium',frameon=False)
-    plt.xlabel(r'Firing rate (Hz)',fontsize='large')
+    plt.xlabel(r'Firing rate (spikes/s)',fontsize='large')
     plt.xticks(np.linspace(3.0,4.5,4))
     plt.text(2.8,53,r'C',fontsize='x-large')
+    ax6.tick_params(labelsize=9)
     
     #fig.legend([l1, l2, l3], ['IC','INC','NoIh'], bbox_to_anchor=[0.5, 0.5], loc='center', ncol=2)
     
@@ -610,30 +691,31 @@ def Fig4_Dis(lyap, lyap2, auxchao, auxnochaos, auxnoih, tupTable):
         ax.set_xlim([0.2,0.35])
         ax.set_xticks(np.linspace(0.2,0.35,4))
         ax.set_yticks(np.linspace(0.10,0.40,4))
+        ax.tick_params(labelsize=9)
     
     
-    cax1 = fig.add_axes([0.31, 0.735, 0.009, 0.2])
+    cax1 = fig.add_axes([0.31, 0.745, 0.009, 0.2])
     cbar1=fig.colorbar(im1, extend='both',cax=cax1)
-    cbar1.set_label('MLE ',fontsize='small',labelpad=-22,y=1.15,rotation=0)
+    cbar1.set_label('MLE ',fontsize='large',labelpad=-26,y=1.15,rotation=0)
     cbar1.set_ticks(np.linspace(0,0.006,4))
     cbar1.ax.tick_params(labelsize=9)
     
     
-    cax4 = fig.add_axes([0.31, 0.375, 0.009, 0.2])
+    cax4 = fig.add_axes([0.31, 0.385, 0.009, 0.2])
     cbar4=fig.colorbar(im4, extend='both',cax=cax4)
-    cbar4.set_label('MLE ',fontsize='small',labelpad=-22,y=1.15,rotation=0)
+    cbar4.set_label('MLE ',fontsize='large',labelpad=-26,y=1.15,rotation=0)
     cbar4.set_ticks(np.linspace(0,0.006,4))
     cbar4.ax.tick_params(labelsize=9)
     
-    cax2 = fig.add_axes([0.945, 0.735, 0.009, 0.2])
-    cbar2=fig.colorbar(im3, extend='max',cax=cax2)
-    cbar2.set_label('FR ',fontsize='small',labelpad=-15,y=1.15,rotation=0)
+    cax2 = fig.add_axes([0.945, 0.745, 0.009, 0.2])
+    cbar2=fig.colorbar(im2, extend='max',cax=cax2)
+    cbar2.set_label('FR ',fontsize='large',labelpad=-17,y=1.11,rotation=0)
     cbar2.set_ticks(np.linspace(0,20,5))
     cbar2.ax.tick_params(labelsize=9)
     
     cax5 = fig.add_axes([0.31,0.08, 0.01, 0.2])
     cbar5=fig.colorbar(im5, extend='max',cax=cax5)
-    cbar5.set_label('FR ',fontsize='small',labelpad=-15,y=1.15,rotation=0)
+    cbar5.set_label('FR ',fontsize='large',labelpad=-17,y=1.11,rotation=0)
     cbar5.set_ticks(np.linspace(0,20,5))
     cbar5.ax.tick_params(labelsize=9)
     
@@ -657,50 +739,114 @@ def Fig5_plot(chaos, nonchaos, noIh):
     fig=plt.figure(1,figsize=(11, 5))
     plt.clf
     ax=[plt.subplot(2,3,i) for i in range(1,7)]
+#    ax = GridSpec(2,3)
     
-    orpos=['I','II','III']
     #subplots for the order parameter 
-    for i,j,lc in zip(range(0,4,3),range(0,2),orpos):
-        line1,=ax[i].plot(nonchaos[j][:,0],np.mean(nonchaos[j][:,1:6],axis=1),'g-s',label=u'Non-chaotic networks')
-        line2,=ax[i].plot(chaos[j][:,0],np.mean(chaos[j][:,1:6],axis=1),'r--*',label=u'Chaotic networks')
-        line3,=ax[i].plot(noIh[j][:,0],np.mean(noIh[j][:,1:6],axis=1),'b-.>',label=u'NoIh networks')
-        ax[i].set_ylim([0.000,1.02])
-        ax[i].set_ylabel(r'R', fontsize='x-large')
+    for i,j in zip(range(0,4,3),range(0,2)):
+        ax[i].plot(nonchaos[j][:,0][1],np.mean(nonchaos[j][:,1:6],axis=1)[1],'g-s',label=u'Non-chaotic networks')
+        ax[i].plot(nonchaos[j][:,0][5:],np.mean(nonchaos[j][:,1:6],axis=1)[5:],'g-s')
+        
+        ax[i].plot(chaos[j][:,0][1],np.mean(chaos[j][:,1:6],axis=1)[1],'r--*',label=u'Chaotic networks')
+        ax[i].plot(chaos[j][:,0][5:],np.mean(chaos[j][:,1:6],axis=1)[5:],'r--*')
+        
+        ax[i].plot(noIh[j][:,0][1],np.mean(noIh[j][:,1:6],axis=1)[1],'b-.^',label=u'NoIh networks')
+        ax[i].plot(noIh[j][:,0][5:],np.mean(noIh[j][:,1:6],axis=1)[5:],'b-.^')
+#        ax[i].tick_params(labelsize=10)
+#        ax[i].set_ylim([0.000,1.02])
+        ax[i].set_ylabel(r'R', fontsize='large')
+        ax[i].set_xscale('log')
+
+        
+        y1,y2=ax[i].get_ylim()
+        ax[i].bar(3e-6,0.5,3e-6,-0.01,color='white',lw=5,clip_on=False,zorder=5)
+        ax[i].set_ylim((y1,y2))
+        
+        ax[i].set_xlim((5e-7,1.5))
+        ax[i].set_xticks((1e-6,1e-5,1e-4,1e-3,1e-2,0.1,1))
+        ax[i].set_xticklabels(("$0$","$10^{-5}$","$10^{-4}$","$10^{-3}$","$10^{-2}$","$10^{-1}$","$10^0$"))
+        
+        t1=ax[i].xaxis.get_major_ticks()[0]
+        t1.set_pad(5.5)
+        
+        for t in ax[i].xaxis.get_minor_ticks()[:8]:
+            t.set_visible(False)
+        ax[i].tick_params(labelsize=10)
+
+
+
 
     ax[0].legend(fontsize='small',loc=2,frameon=False)
     ax[0].text(10**(-7.7),0.975,'A',fontsize='xx-large')
     ax[3].text(10**(-7.7),0.975,'B',fontsize='xx-large')
            
     #subplots for the KYdim
-    for i,j,lc in zip(range(1,5,3),range(0,3),orpos):
-        ax[i].plot(nonchaos[j][:,0],np.mean(nonchaos[j][:,6:11],axis=1),'g-s',label=u'INC networks')
-        ax[i].plot(chaos[j][:,0],np.mean(chaos[j][:,6:11],axis=1),'r--*',label=u'IC networks')
-        ax[i].plot(noIh[j][:,0],np.mean(noIh[j][:,6:11],axis=1),'b-.>',label=u'INC networks')
-        ax[i].set_ylabel(u'Metastability', fontsize='x-large',labelpad=5)
-        ax[i].set_yticks(np.linspace(0.000,0.030,6))
+    for i,j in zip(range(1,5,3),range(0,3)):
+        ax[i].plot(nonchaos[j][:,0][1],np.mean(nonchaos[j][:,6:11],axis=1)[1],'g-s',)
+        ax[i].plot(nonchaos[j][:,0][5:],np.mean(nonchaos[j][:,6:11],axis=1)[5:],'g-s')
+        
+        ax[i].plot(chaos[j][:,0][1],np.mean(chaos[j][:,6:11],axis=1)[1],'r--*')
+        ax[i].plot(chaos[j][:,0][5:],np.mean(chaos[j][:,6:11],axis=1)[5:],'r--*')
+
+        ax[i].plot(noIh[j][:,0][1],np.mean(noIh[j][:,6:11],axis=1)[1],'b-.^')
+        ax[i].plot(noIh[j][:,0][5:],np.mean(noIh[j][:,6:11],axis=1)[5:],'b-.^')
+
+        ax[i].set_ylabel(u'Metastability', fontsize='large',labelpad=5)
+        ax[i].set_xscale('log')
+        ax[i].set_yticks(np.linspace(0.000,0.030,4))
+        
+        y1,y2=ax[i].get_ylim()
+        ax[i].bar(3e-6,0.11,3e-6,-0.1,color='white',lw=5,clip_on=False,zorder=5)
+        ax[i].set_ylim((y1,y2))
+
+        ax[i].set_xlim((5e-7,1.5))
+        ax[i].set_xticks((1e-6,1e-5,1e-4,1e-3,1e-2,0.1,1))
+        ax[i].set_xticklabels(("$0$","$10^{-5}$","$10^{-4}$","$10^{-3}$","$10^{-2}$","$10^{-1}$","$10^0$"))
+        
+        t1=ax[i].xaxis.get_major_ticks()[0]
+        t1.set_pad(5.5)
+    
+        for t in ax[i].xaxis.get_minor_ticks()[:9]:
+            t.set_visible(False)
+        ax[i].tick_params(labelsize=10)
+#        ax[i].tick_params(labelsize=10)
     
     
     
     #subplots for the the mle
     Fre=[[3.0,4.5],[7.0,9.5]]
-    for i,j,lc,fr in zip(range(2,6,3),range(0,2),orpos,Fre):
-        ax[i].plot(nonchaos[j][:,0],np.mean(nonchaos[j][:,21:26],axis=1),'g-s',label=u'INC networks')
-        ax[i].plot(chaos[j][:,0],np.mean(chaos[j][:,21:26],axis=1),'r--*',label=u'IC networks')
-        ax[i].plot(noIh[j][:,0],np.mean(noIh[j][:,21:26],axis=1),'b-.>',label=u'INC networks')
-        ax[i].set_ylabel(u'MLE', fontsize='x-large',labelpad=-1)
+    for i,j,fr in zip(range(2,6,3),range(0,2),Fre):
+        ax[i].plot(nonchaos[j][:,0][1],np.mean(nonchaos[j][:,21:26],axis=1)[1],'g-s')
+        ax[i].plot(nonchaos[j][:,0][5:],np.mean(nonchaos[j][:,21:26],axis=1)[5:],'g-s')
+
+        ax[i].plot(chaos[j][:,0][1],np.mean(chaos[j][:,21:26],axis=1)[1],'r--*')
+        ax[i].plot(chaos[j][:,0][5:],np.mean(chaos[j][:,21:26],axis=1)[5:],'r--*')
+
+        ax[i].plot(noIh[j][:,0][1],np.mean(noIh[j][:,21:26],axis=1)[1],'b-.^')
+        ax[i].plot(noIh[j][:,0][5:],np.mean(noIh[j][:,21:26],axis=1)[5:],'b-.^')
+
+        ax[i].set_ylabel(u'MLE', fontsize='large')
         ax[i].set_ylim([-0.0005,0.0108])
-        ax[i].set_yticks(np.linspace(0.000,0.01,5))
-        ax[i].text(10**(0.15),0.0082,'FR = %g to %g Hz'%(fr[0],fr[1]),rotation=90,fontsize='large') 
+        ax[i].set_yticks(np.linspace(0.000,0.012,4))
+        ax[i].set_xscale('log')
+        ax[i].text(10**(0.4),0.01,'FR = %g to %g spikes/s'%(fr[0],fr[1]),rotation=90,fontsize='medium')
+        y1,y2=ax[i].get_ylim()
+        ax[i].bar(3e-6,0.1,3e-6,-0.1,color='white',lw=5,clip_on=False,zorder=5)
+        ax[i].set_ylim((y1,y2))
+
+        ax[i].set_xlim((5e-7,1.5))
+        ax[i].set_xticks((1e-6,1e-5,1e-4,1e-3,1e-2,0.1,1))
+        ax[i].set_xticklabels(("$0$","$10^{-5}$","$10^{-4}$","$10^{-3}$","$10^{-2}$","$10^{-1}$","$10^0$"))
+        
+        t1=ax[i].xaxis.get_major_ticks()[0]
+        t1.set_pad(5.5)
     
-    for ax0 in ax:
-        ax0.set_xscale('log')
-        ax0.set_xlim([10**(-6.3),10**0])
-        ax0.set_xticks(np.logspace(-6, 0, num=4))
-        ax0.grid()
-    #    ax0.set_xticks((10**(-6),10**(-4),10**(-2),10**(0)))
-    #    ax0.set_xticklabels((r'$10^{-6}$',r'$10^{-4}$',r'$10^{-2}$',r'$10^{0}$'))
-    
-       
+        for t in ax[i].xaxis.get_minor_ticks()[:9]:
+            t.set_visible(False)
+        ax[i].tick_params(labelsize=10)
+
+
+
+
     #set the xlabel    
     for i in range(3,6):
         ax[i].set_xlabel(r'g', fontsize = 'x-large')
